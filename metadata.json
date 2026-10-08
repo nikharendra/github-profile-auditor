@@ -1,0 +1,7 @@
+{
+  "name": "GitHub Profile Auditor",
+  "description": "Recruiter-readiness audit tool analyzing public GitHub profiles with deterministic scoring and actionable Gemini recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
