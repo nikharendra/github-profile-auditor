@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx --test server/tests/phase2.test.ts server/tests/phase3.test.ts server/tests/phase4.test.ts"
+    "test": "tsx --test server/tests/phase2.test.ts server/tests/phase3.test.ts server/tests/phase4.test.ts server/tests/api.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

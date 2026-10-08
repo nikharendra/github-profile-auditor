@@ -1,142 +1,3 @@
-// export interface AuditResponse {
-//   username: string;
-//   cached?: boolean;
-
-//   profile: {
-//     username: string;
-//     name: string;
-//     avatarUrl?: string;
-//     bio?: string;
-//     htmlUrl?: string;
-//     publicRepoCount: number;
-//     followersCount?: number;
-//     followingCount?: number;
-//     accountAgeDays: number;
-//     location?: string;
-//     company?: string;
-//     blog?: string;
-//   };
-
-//   repositories: Array<{
-//     name: string;
-//     description: string;
-//     language: string | null;
-//     htmlUrl?: string;
-//     isFork: boolean;
-//     isArchived: boolean;
-//     daysSinceLastPush: number | null;
-//     topics: string[];
-//     hasReadme: boolean;
-//     hasSetupInstructions: boolean;
-//     hasUsageExamples: boolean;
-//     hasLicense: boolean;
-//   }>;
-
-//   analysis: {
-//     overallScore: number;
-//     categories: {
-//       profile: {
-//         score: number;
-//         evidence: string[];
-//       };
-//       project: {
-//         score: number;
-//         evidence: string[];
-//       };
-//       documentation: {
-//         score: number;
-//         evidence: string[];
-//       };
-//       activity: {
-//         score: number;
-//         evidence: string[];
-//       };
-//       technical: {
-//         score: number;
-//         evidence: string[];
-//       };
-//     };
-//   };
-
-//   ai: {
-//     available: boolean;
-//     recruiterView?: string;
-//     summary?: string;
-//     strengths?: string[];
-//     weaknesses?: string[];
-//     priorities?: Array<{
-//       title: string;
-//       why: string;
-//       action: string;
-//       impact: string;
-//     }>;
-//     modelName?: string;
-//     generatedAt?: string;
-//     errorCode?: string;
-//     message?: string;
-//   };
-// }
-
-// export class AuditApiError extends Error {
-//   status: number;
-
-//   constructor(message: string, status: number) {
-//     super(message);
-//     this.name = "AuditApiError";
-//     this.status = status;
-//   }
-// }
-
-// export async function auditGitHubProfile(
-//   username: string,
-// ): Promise<AuditResponse> {
-//   const cleanUsername = username.trim();
-
-//   if (!cleanUsername) {
-//     throw new AuditApiError("Please enter a GitHub username.", 400);
-//   }
-
-//   const response = await fetch(
-//     `/api/audit/${encodeURIComponent(cleanUsername)}`,
-//     {
-//       method: "GET",
-//       headers: {
-//         Accept: "application/json",
-//       },
-//     },
-//   );
-
-//   let body: unknown;
-
-//   try {
-//     body = await response.json();
-//   } catch {
-//     throw new AuditApiError(
-//       "The audit service returned an invalid response.",
-//       response.status,
-//     );
-//   }
-
-//   if (!response.ok) {
-//     const message =
-//       typeof body === "object" &&
-//       body !== null &&
-//       "message" in body &&
-//       typeof body.message === "string"
-//         ? body.message
-//         : "Unable to analyze this GitHub profile.";
-
-//     throw new AuditApiError(message, response.status);
-//   }
-
-//   return body as AuditResponse;
-// }
-
-
-
-
-
-
 
 export interface GitHubProfile {
   username: string;
@@ -147,11 +8,14 @@ export interface GitHubProfile {
   blogUrl: string;
   location: string;
   company: string;
+
   publicRepoCount: number;
   followersCount: number;
   followingCount: number;
+
   accountCreatedAt: string;
   accountAgeDays: number;
+
   hasBio: boolean;
   hasCustomName: boolean;
   hasLocationOrBlog: boolean;
@@ -164,7 +28,7 @@ export interface ReadmeSignals {
   rawLength: number;
   headingsCount: number;
   hasSetupInstructions: boolean;
-  hasUsageExamples: boolean;
+  hasUsageExample: boolean;
   hasScreenshotsOrDemo: boolean;
   hasLicenseSection: boolean;
   hasProjectDescription: boolean;
@@ -175,24 +39,33 @@ export interface Repository {
   fullName: string;
   url: string;
   description: string;
+
   language: string | null;
   homepageUrl: string | null;
+
   stars: number;
   forks: number;
   size: number;
   openIssues: number;
+
   defaultBranch: string;
+
   isFork: boolean;
   isArchived: boolean;
+
   createdAt: string;
   updatedAt: string;
   pushedAt: string;
+
   daysSinceLastPush: number | null;
+
   topics: string[];
+
   hasDescription: boolean;
   hasHomepage: boolean;
   hasTopics: boolean;
   hasLicense: boolean;
+
   inspectedForReadme: boolean;
   readme?: ReadmeSignals;
 }
@@ -202,12 +75,17 @@ export interface CategoryAudit {
   weight: number;
   score: number;
   weightedScore: number;
+
+  // Category-specific evidence structure.
+  // The backend owns the exact shape.
   breakdown: unknown;
+
   evidence: string[];
 }
 
 export interface Audit {
   overallScore: number;
+
   categories: {
     profilePresentation: CategoryAudit;
     projectQuality: CategoryAudit;
@@ -221,31 +99,39 @@ export interface SummaryStats {
   totalRepos: number;
   originalRepos: number;
   forkedRepos: number;
+
   primaryLanguages: string[];
+
   reposWithReadme: number;
   reposWithDescription: number;
+
   lastActiveDate: string | null;
 }
 
 export interface AuditMetadata {
   repositoriesFetched: number;
   repositoriesInspected: number;
+
   originalRepositoriesCount: number;
   forkedRepositoriesCount: number;
+
   cached: boolean;
   timestamp: string;
 }
 
 export interface AiAuditResult {
   available: boolean;
+
   errorCode?: string;
   message?: string;
   timestamp: string;
 
   recruiterView?: string;
   summary?: string;
+
   strengths?: string[];
   weaknesses?: string[];
+
   priorities?: Array<{
     title: string;
     why: string;
@@ -256,29 +142,72 @@ export interface AiAuditResult {
 
 export interface AuditResponse {
   profile: GitHubProfile;
+
   repositories: Repository[];
   forkedRepositories: Repository[];
+
   analyzedRepositoriesCount: number;
+
   metadata: AuditMetadata;
   audit: Audit;
+
   summaryStats: SummaryStats | null;
+
   ai: AiAuditResult;
 }
 
-export class AuditApiError extends Error {
-  status: number;
+interface ApiErrorResponse {
+  error?: string;
   code?: string;
+  statusCode?: number;
+}
+
+export class AuditApiError extends Error {
+  readonly status: number;
+  readonly code?: string;
 
   constructor(message: string, status: number, code?: string) {
     super(message);
+
     this.name = "AuditApiError";
     this.status = status;
     this.code = code;
+
+    // Required when extending Error in some transpilation/runtime setups.
+    Object.setPrototypeOf(this, AuditApiError.prototype);
+  }
+}
+
+function isApiErrorResponse(value: unknown): value is ApiErrorResponse {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const data = value as Record<string, unknown>;
+
+  return (
+    (data.error === undefined || typeof data.error === "string") &&
+    (data.code === undefined || typeof data.code === "string") &&
+    (data.statusCode === undefined || typeof data.statusCode === "number")
+  );
+}
+
+async function parseResponseBody(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    return null;
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    return null;
   }
 }
 
 export async function auditGitHubProfile(
-  username: string
+  username: string,
 ): Promise<AuditResponse> {
   const trimmedUsername = username.trim();
 
@@ -286,35 +215,37 @@ export async function auditGitHubProfile(
     throw new AuditApiError(
       "Please enter a GitHub username.",
       400,
-      "INVALID_USERNAME"
+      "INVALID_USERNAME",
     );
   }
 
   const response = await fetch(
-    `/api/audit/${encodeURIComponent(trimmedUsername)}`
+    `/api/audit/${encodeURIComponent(trimmedUsername)}`,
   );
 
-  let data: unknown;
+  const data = await parseResponseBody(response);
 
-  try {
-    data = await response.json();
-  } catch {
+  if (!response.ok) {
+    const errorMessage = isApiErrorResponse(data)
+      ? data.error
+      : undefined;
+
+    const errorCode = isApiErrorResponse(data)
+      ? data.code
+      : undefined;
+
     throw new AuditApiError(
-      "The server returned an invalid response.",
-      response.status
+      errorMessage || "Unable to analyze this GitHub profile.",
+      response.status,
+      errorCode,
     );
   }
 
-  if (!response.ok) {
-    const errorData = data as {
-      message?: string;
-      errorCode?: string;
-    };
-
+  if (!data || typeof data !== "object") {
     throw new AuditApiError(
-      errorData.message || "Unable to analyze this GitHub profile.",
+      "The server returned an invalid response.",
       response.status,
-      errorData.errorCode
+      "INVALID_RESPONSE",
     );
   }
 
